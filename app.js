@@ -4,7 +4,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose')
 
-mongoose.connect("mongodb+srv://carlosmpz:Dw2EYrpcoJ1bPtlI@cluster0.xfrvl9b.mongodb.net/food_choice?retryWrites=true&w=majority")
+mongoose.connect("mongodb+srv://dalvarezr:X5cqaGMm3z98gFPm@cluster0.rde0ke0.mongodb.net/foodchoice?retryWrites=true&w=majority")
 .then(()=>{
     console.log('Conexion exitosa con la base de datos')
 }).catch((err)=>{
@@ -19,8 +19,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use("/api/admin",require("./routes/admin"))
-app.use("/api/restaurant",require("./routes/restaurant"))
+app.use("/api/admin",require("./component/admin/route"))
+app.use("/api/restaurant",require("./component/restaurant/route"))
 
 
 

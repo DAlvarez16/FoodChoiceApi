@@ -1,5 +1,5 @@
 var express = require ("express");
-var restaurantcontroller = require("../controllers/restaurant");
+var restaurantcontroller = require("./controller");
 
 var router = express.Router();
 

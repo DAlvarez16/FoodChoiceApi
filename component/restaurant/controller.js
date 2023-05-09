@@ -1,5 +1,5 @@
 const { request, response } = require("express")
-const restaurantModel = require("../models/restaurant")
+const restaurantModel = require("./model")
 
 
 async function create(req = request, res = response) {

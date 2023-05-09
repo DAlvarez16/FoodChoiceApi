@@ -1,5 +1,5 @@
 const { request, response } = require('express')
-const AdminModel = require('../models/admin')
+const AdminModel = require('./model')
 const bcrypt = require('bcryptjs')
 
 async function create(req=request, res= response){
