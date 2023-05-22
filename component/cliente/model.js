@@ -14,7 +14,15 @@ var ClientSchema = new Schema({
     password:{
         type: String,
         required:true
-    }
+    },
+    comments:[{
+        type:Types.ObjectId,
+        ref:"Comments"
+    }],
+    stars:[{
+        type:Types.ObjectId,
+        ref: "Stars"
+    }]
 
 })
 
