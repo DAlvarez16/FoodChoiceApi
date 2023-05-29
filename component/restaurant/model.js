@@ -21,10 +21,6 @@ var RestaurantSchema = new Schema({
         type: String,
         required:true,
     },
-    products:[{
-        type: Types.ObjectId,
-        ref: 'Products'
-    }],
     restaurantType:{
         type: String,
         required: true
@@ -48,6 +44,10 @@ var RestaurantSchema = new Schema({
         required:true,
         ref: "Comments"
     }],
+    adminRecomendation:{
+        type:Boolean,
+        default:false
+    }
 })
 
 module.exports = model("Restaurant", RestaurantSchema)

@@ -56,7 +56,18 @@ async function findRestaurants(req = request, res = response) {
     try {
        
         //validar que el restaurante no exista en la base de datos
-        const restaurants = await restaurantModel.find()
+        const restaurants = await restaurantModel.aggregate(
+            [
+                {
+                    $lookup:{
+                        from: 'comments',
+                        localField: "comments",
+                        foreignField: "_id",
+                        as: 'comments',                  
+                    }
+                }
+            ]
+        )
         //Si existe respuesta de negacion
         if (restaurants.length == 0) {
             return res.status(409).json({
@@ -299,7 +310,7 @@ async function addcomment(req = request, res = response) {
         //requiriendo los datos del body
         const { idClient, text } = req.body
         //validar que el restaurante no exista en la base de datos
-        const restaurant = await restaurantModel.findById(id)
+        const restaurant = await restaurantModel.findById(idRestaurant)
         //Si existe respuesta de negacion
         if (!restaurant) {
             return res.status(409).json({
@@ -339,6 +350,44 @@ async function addcomment(req = request, res = response) {
         })
     }
 
+
+}
+async function adminRecomendation(req = request, res = response) {
+    try {
+        //requiriendo id de mongo
+        const {id} = req.params
+         
+        //validar que el restaurante no exista en la base de datos
+        const restaurant = await restaurantModel.findById(id)
+        //Si existe respuesta de negacion
+        if (!restaurant) {
+            return res.status(404).json({
+                msg: "Este restaurante no existe",
+                code: 404,
+                status: false
+            })
+        }
+        //si no existe crea el restaurante
+        await restaurantModel.updateOne(
+            {_id:id},
+            {
+           adminRecomendation:!restaurant.adminRecomendation
+        })
+        //respuesta exitosa
+        return res.status(201).json({
+            msg: "Recomendación actualizada",
+            code: 201,
+            status: true
+        })
+    } catch (error) {
+        //respuesta error del servidor
+        return res.status(500).json({
+            msg: "Error interno del servidor: "+error,
+            code: 500,
+            status: "error"
+        })
+    }
+
 }
 
 module.exports = {
@@ -349,6 +398,7 @@ module.exports = {
     update,
     deletear,
     rank,
-    addcomment
+    addcomment,
+    adminRecomendation
 }
 

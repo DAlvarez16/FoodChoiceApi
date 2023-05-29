@@ -22,6 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/api/admin",require("./component/admin/route"))
 app.use("/api/restaurant",require("./component/restaurant/route"))
 app.use("/api/client",require("./component/cliente/route"))
+app.use("/api/comment",require("./component/comments/route"))
 
 
 

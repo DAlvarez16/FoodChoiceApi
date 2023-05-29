@@ -12,5 +12,5 @@ router.put("/update/:id", restaurantcontroller.update)
 router.delete("/delete/:id", restaurantcontroller.deletear)
 router.put("/rank/:id", restaurantcontroller.rank)
 router.post("/add-comment/:idRestaurant", restaurantcontroller.addcomment)
-
+router.put("/admin-recomendation/:id", restaurantcontroller.adminRecomendation)
 module.exports = router;
