@@ -22,8 +22,11 @@ var ClientSchema = new Schema({
     stars:[{
         type:Types.ObjectId,
         ref: "Stars"
-    }]
-
+    }],
+    userType: {
+        type: String,
+        default: 'Cliente'
+    }
 })
 
 module.exports = model("Client", ClientSchema)

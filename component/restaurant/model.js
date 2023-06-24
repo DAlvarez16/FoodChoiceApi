@@ -47,6 +47,14 @@ var RestaurantSchema = new Schema({
     adminRecomendation:{
         type:Boolean,
         default:false
+    },
+    image:{
+        type: String,
+        default: 'no-image'
+    },
+    userType: {
+        type: String,
+        default: 'Restautante'
     }
 })
 
