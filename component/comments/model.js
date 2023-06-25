@@ -4,7 +4,10 @@ var CommentSchema = new Schema({
     idClient:{
         type:Types.ObjectId,
         ref:"Client",
-        required: true
+    },
+    idAdmin:{
+        type:Types.ObjectId,
+        ref:"Admin",
     },
     idRestaurant:{
         type: Types.ObjectId,

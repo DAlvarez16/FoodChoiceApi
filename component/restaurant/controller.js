@@ -2,6 +2,7 @@ const { request, response } = require("express")
 const restaurantModel = require("./model")
 const CommentModel = require("../comments/model")
 const ClientModel = require("../cliente/model")
+const AdminModel = require('../admin/model')
 const StarsModel = require("../stars/model")
 const bcrypt = require("bcryptjs")
 const { Types } = require("mongoose")
@@ -193,7 +194,7 @@ async function update(req = request, res = response) {
         const { id } = req.params
         //requiriendo los datos del body
         const { nit, name, description, address, phone, restaurantType, username, password } = req.body
-        
+
         //encryptar la nueva contraseña
         var salt = bcrypt.genSaltSync(6)
         var hash = bcrypt.hashSync(password, salt)
@@ -268,16 +269,25 @@ async function rank(req = request, res = response) {
         const { id } = req.params
         //requiriendo los datos del body
         const { stars, idClient } = req.body
-        //validar que el restaurante no exista en la base de datos
-        const restaurant = await restaurantModel.findById(id)
-        //Si existe respuesta de negacion
-        if (!restaurant) {
-            return res.status(409).json({
-                msg: "Este restaurante no existe",
-                code: 404,
-                status: false
+
+        //Si la calificacion existe para ese restaurante con el usuario actual, debe elimarla para colocar la nueva
+        const starToDelete = await StarsModel.findOne({
+            idClient: new Types.ObjectId(idClient),
+            idRestaurant: new Types.ObjectId(id)
+        })
+        if (starToDelete) {
+            //eliminar las estrellas anteriores del usuario cliente
+            await StarsModel.deleteOne({
+                _id: new Types.ObjectId(starToDelete._id)
+            })
+            //atualizar el cliente para borrar las estrellas de su registro
+            await ClientModel.updateOne({
+                _id: new Types.ObjectId(idClient)
+            }, {
+                $pull: { stars: starToDelete._id }
             })
         }
+
         //Craear calificacion con la informacion del restaurante, el cliente y la cantidad de estrellas
         const starsAdded = await StarsModel.create({
             idClient,
@@ -304,7 +314,7 @@ async function rank(req = request, res = response) {
             { stars: promStars }
         )
         //respuesta exitosa
-        return res.status(200).json({
+        return res.status(201).json({
             msg: "Calificacion actualizada con exito",
             code: 201,
             status: true
@@ -324,7 +334,7 @@ async function addcomment(req = request, res = response) {
         //requiriendo id de mongo
         const { idRestaurant } = req.params
         //requiriendo los datos del body
-        const { idClient, text } = req.body
+        const { idClient, idAdmin, text } = req.body
         //validar que el restaurante no exista en la base de datos
         const restaurant = await restaurantModel.findById(idRestaurant)
         //Si existe respuesta de negacion
@@ -335,17 +345,34 @@ async function addcomment(req = request, res = response) {
                 status: false
             })
         }
-        const commentCreated = await CommentModel.create(
-            {
-                text,
-                idRestaurant,
-                idClient
-            }
-        )
-        await ClientModel.updateOne(
-            { _id: idClient },
-            { $push: { comments: commentCreated._id } }
-        )
+        let commentCreated
+        //si la id que viene es la del cliente, guardar el comentario con el cliente
+        if (idClient) {
+            commentCreated = await CommentModel.create(
+                {
+                    text,
+                    idRestaurant,
+                    idClient
+                }
+            )
+            await ClientModel.updateOne(
+                { _id: idClient },
+                { $push: { comments: commentCreated._id } }
+            )
+        } else if (idAdmin) {
+            commentCreated = await CommentModel.create(
+                {
+                    text,
+                    idRestaurant,
+                    idAdmin
+                }
+            )
+            await AdminModel.updateOne(
+                { _id: idAdmin },
+                { $push: { comments: commentCreated._id } }
+            )
+        }
+
         //si no existe crea el restaurante
         await restaurantModel.updateOne(
             { _id: idRestaurant },
@@ -410,7 +437,7 @@ async function adminRecomendation(req = request, res = response) {
 async function addImage(req = request, res = response) {
     const file = req.file.filename
     try {
-        const { id } = req.params        
+        const { id } = req.params
 
         //verificar si el restaurante ya tenia imagen antes para borrarla
         const restaurant = await restaurantModel.findById(id)
@@ -418,7 +445,7 @@ async function addImage(req = request, res = response) {
         //si el restaurante tenia una imagen antes, eliminamos esa imagen para que ingrese la nueva
         if (restaurant.image != 'no-image') {
             const filePath = path.join(__dirname, '../../uploads/' + restaurant.image)
-            
+
             fs.unlink(filePath, (err) => {
                 if (err) {
                     return res.status(500).json({
@@ -458,10 +485,10 @@ async function addImage(req = request, res = response) {
     }
 }
 
-async function getImage(req = request, res = response){
+async function getImage(req = request, res = response) {
     try {
         //pedimos la id del restaurante
-        const {id} = req.params
+        const { id } = req.params
         //buscamos el restaurante para obtener el nombre de la iamgen
         const restaurant = await restaurantModel.findById(id)
         //al obtener el nombre de la imagen que viene de la bd podemos ubicarla en la carpeta uploads

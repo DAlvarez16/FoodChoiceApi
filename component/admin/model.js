@@ -7,7 +7,15 @@ const AdminSchema = new Schema({
     },
     password:{
         type: String,
-    }
+    },
+    userType: {
+        type: String,
+        default: 'Admin'
+    },
+    comments:[{
+        type:Types.ObjectId,
+        ref:"Comments"
+    }]
 },{
     timestamps: true,
     strict: false

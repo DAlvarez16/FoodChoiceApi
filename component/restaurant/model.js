@@ -54,7 +54,7 @@ var RestaurantSchema = new Schema({
     },
     userType: {
         type: String,
-        default: 'Restautante'
+        default: 'Restaurante'
     }
 })
 
