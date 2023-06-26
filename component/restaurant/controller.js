@@ -230,26 +230,30 @@ async function update(req = request, res = response) {
 }
 async function deletear(req = request, res = response) {
     try {
-        //requiriendo id de mongo
+        //requiriendo id del restaurante que se va a elimianr
         const { id } = req.params
-        //validar que el restaurante no exista en la base de datos
-        const restaurant = await restaurantModel.findById(id)
-        //Si existe respuesta de negacion
-        if (!restaurant) {
-            return res.status(409).json({
-                msg: "Este restaurante no existe",
-                code: 404,
-                status: false
-            })
-        }
-        //si no existe crea el restaurante
-        await restaurantModel.deleteOne(
-            { _id: id },
-        )
+
+        //eliminar el restaurante por su id
+        const restaurantDeleted = await restaurantModel.findByIdAndDelete(id)
+
+        //borramos los comentarios que esten relacionados con el restaurante
+        await CommentModel.deleteMany({ idRestaurant: new Types.ObjectId(id) })
+
+        //borrar la imagen del restaurante del servidor
+        const filePath = path.join(__dirname, '../../uploads/' + restaurantDeleted.image)
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                return res.status(500).json({
+                    msg: "An error ocurred: " + err,
+                    code: 500
+                })
+            }
+        })
+
         //respuesta exitosa
         return res.status(200).json({
             msg: "Restaurante borrado con exito",
-            code: 201,
+            code: 200,
             status: true
         })
     } catch (error) {
