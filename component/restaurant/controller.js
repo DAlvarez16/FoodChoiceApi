@@ -74,7 +74,7 @@ async function findRestaurants(req = request, res = response) {
         )
         //Si existe respuesta de negacion
         if (restaurants.length == 0) {
-            return res.status(409).json({
+            return res.status(200).json({
                 msg: "No existen restaurantes registrados",
                 code: 404,
                 status: false
@@ -121,7 +121,7 @@ async function findRestaurant(req = request, res = response) {
         )
         //Si existe respuesta de negacion
         if (restaurant.length == 0) {
-            return res.status(409).json({
+            return res.status(200).json({
                 msg: "No existe el restaurante registrado",
                 code: 404,
                 status: false
@@ -343,7 +343,7 @@ async function addcomment(req = request, res = response) {
         const restaurant = await restaurantModel.findById(idRestaurant)
         //Si existe respuesta de negacion
         if (!restaurant) {
-            return res.status(409).json({
+            return res.status(200).json({
                 msg: "Este restaurante no existe",
                 code: 404,
                 status: false
@@ -409,7 +409,7 @@ async function adminRecomendation(req = request, res = response) {
         const restaurant = await restaurantModel.findById(id)
         //Si existe respuesta de negacion
         if (!restaurant) {
-            return res.status(404).json({
+            return res.status(200).json({
                 msg: "Este restaurante no existe",
                 code: 404,
                 status: false

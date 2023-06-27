@@ -13,7 +13,7 @@ async function update(req = request, res = response) {
         const comment = await commentModel.findById(id)
         //Si existe respuesta de negacion
         if (!comment) {
-            return res.status(404).json({
+            return res.status(200).json({
                 msg: "Este comentario no existe",
                 code: 404,
                 status: false
@@ -49,7 +49,7 @@ async function deletear(req = request, res = response) {
         const comment = await commentModel.findById(id)
         //Si existe respuesta de negacion
         if (!comment) {
-            return res.status(409).json({
+            return res.status(200).json({
                 msg: "Este comentario no existe",
                 code: 404,
                 status: false
