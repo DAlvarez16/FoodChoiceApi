@@ -315,7 +315,7 @@ async function rank(req = request, res = response) {
         //Guardar promedio al restaurante
         await restaurantModel.updateOne(
             { _id: id },
-            { stars: promStars }
+            { stars: promStars.toFixed(1) }
         )
         //respuesta exitosa
         return res.status(201).json({
